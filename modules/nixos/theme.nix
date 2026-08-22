@@ -39,6 +39,7 @@
     # Можно не писать: по умолчанию включается через autoEnable.
     # Но для очевидности мне нравится оставить.
     targets.gtk.enable = true;
+    targets.chromium.enable = true;
 
     icons = {
       enable = true;
