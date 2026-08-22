@@ -1,0 +1,54 @@
+window {
+  background-color: transparent;
+}
+
+#outer-box {
+  margin: 0;
+  padding: 6px;
+  background-color: #@base00@;
+  border: 2px solid rgba(250, 250, 250, 0.31);
+  border-radius: 10px;
+}
+
+* {
+  font-family: "JetBrains Mono";
+  color: #@base05@;
+}
+
+#scroll {
+  padding: 0.5rem;
+}
+
+#input {
+  margin: 0.5rem;
+  padding: 0.6rem;
+  background-color: #@base01@;
+  color: #@base05@;
+  border: 1px solid #@base02@;
+  border-radius: 8px;
+  outline: none;
+  box-shadow: none;
+  font-size: 1rem;
+}
+
+#inner-box {
+  margin: 0 0.5rem 0.5rem;
+  font-size: 1rem;
+}
+
+#img {
+  margin: 10px;
+}
+
+#entry {
+  border-radius: 8px;
+  padding: 0.25rem;
+}
+
+#entry:selected {
+  background-color: #@base0D@;
+}
+
+#text:selected {
+  color: #@base00@;
+}
