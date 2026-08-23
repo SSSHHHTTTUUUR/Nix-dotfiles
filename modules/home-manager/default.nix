@@ -50,6 +50,17 @@ in
     wofi.enable = false;
   };
 
+  programs.chromium = {
+    enable = true;
+    package = pkgs.chromium;
+    commandLineArgs = [ "--no-default-browser-check" ];
+    extensions = [
+      "ddkjiahejlhfcafbddmgiahcphecmpfh" # uBlock Origin Lite
+      "pkehgijcmpdhfbdbbnkijodmdjhbjlgp" # Privacy Badger
+      "fihpndlbefclajajpmcancklkcjijeno" # Ayu Dark
+    ];
+  };
+
   xdg.configFile = {
     "hypr/hyprland.conf".source = themed ./config/hypr/hyprland.conf;
     "hypr/hypridle.conf".source = ./config/hypr/hypridle.conf;

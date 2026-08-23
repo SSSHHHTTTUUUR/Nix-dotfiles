@@ -39,7 +39,9 @@
     # Можно не писать: по умолчанию включается через autoEnable.
     # Но для очевидности мне нравится оставить.
     targets.gtk.enable = true;
-    targets.chromium.enable = true;
+    # Chromium's interface theme is installed through Home Manager as a normal
+    # Ayu Dark extension. The Stylix target would create managed browser policy.
+    targets.chromium.enable = false;
 
     icons = {
       enable = true;
