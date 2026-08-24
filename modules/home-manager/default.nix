@@ -40,8 +40,10 @@ in
     ./waybar.nix
     ./kitty.nix
     ./wlogout.nix
-    ./zed.nix
     ./fish.nix
+    ./codex.nix
+    ./fzf.nix
+    ./yazi.nix
     ./browser.nix
   ];
 
@@ -62,6 +64,7 @@ in
     mako.enable = false;
     waybar.enable = false;
     wofi.enable = false;
+    yazi.enable = false;
   };
 
 }

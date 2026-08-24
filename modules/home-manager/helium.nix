@@ -1,10 +1,7 @@
 { pkgs, ... }:
 
 {
-  home = {
-    packages = [ pkgs.firefox ];
-    sessionVariables.NIXOS_OZONE_WL = "1";
-  };
+  home.sessionVariables.NIXOS_OZONE_WL = "1";
 
   programs.chromium = {
     enable = true;
