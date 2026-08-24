@@ -2,7 +2,7 @@
     border: none;
     border-radius: 0;
     font-family: "JetBrains Mono";
-    font-size: 13px;
+    font-size: 14px;
     min-height: 0;
 }
 
@@ -65,8 +65,12 @@ window#waybar {
     background: #@base02@;
 }
 
-#battery.charging { color: #@base0B@; }
-#battery.warning:not(.charging) { color: #@base09@; }
+#battery.charging {
+    color: #@base0B@;
+}
+#battery.warning:not(.charging) {
+    color: #@base09@;
+}
 #battery.critical:not(.charging) {
     background: #@base08@;
     color: #@base00@;

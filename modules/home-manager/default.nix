@@ -32,8 +32,10 @@ let
     pkgs.replaceVars src (
       lib.filterAttrs (name: _: lib.hasInfix "@${name}@" (builtins.readFile src)) templateVars
     );
+
 in
 {
+
   home = {
     username = "tea";
     homeDirectory = "/home/tea";
@@ -61,8 +63,18 @@ in
     ];
   };
 
+  # Hyprland 0.55 prefers hyprland.lua when it exists. This configuration
+  # intentionally uses the established Hyprlang file, so remove the Lua file
+  # produced by the abandoned migration during activation.
+  home.activation.removeHyprlandLuaConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    rm -f -- "$HOME/.config/hypr/hyprland.lua"
+  '';
+
   xdg.configFile = {
-    "hypr/hyprland.conf".source = themed ./config/hypr/hyprland.conf;
+    "hypr/hyprland.conf" = {
+      source = themed ./config/hypr/hyprland.conf;
+      force = true;
+    };
     "hypr/hypridle.conf".source = ./config/hypr/hypridle.conf;
     "hypr/hyprlock.conf".source = themed ./config/hypr/hyprlock.conf;
 
