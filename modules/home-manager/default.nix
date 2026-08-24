@@ -35,6 +35,17 @@ let
 
 in
 {
+  imports = [
+    ./hyprland.nix
+    ./waybar.nix
+    ./kitty.nix
+    ./wlogout.nix
+    ./zed.nix
+    ./fish.nix
+    ./browser.nix
+  ];
+
+  _module.args.themed = themed;
 
   home = {
     username = "tea";
@@ -48,42 +59,9 @@ in
     hyprland.enable = false;
     hyprlock.enable = false;
     kitty.enable = false;
+    mako.enable = false;
     waybar.enable = false;
     wofi.enable = false;
   };
 
-  programs.chromium = {
-    enable = true;
-    package = pkgs.chromium;
-    commandLineArgs = [ "--no-default-browser-check" ];
-    extensions = [
-      "ddkjiahejlhfcafbddmgiahcphecmpfh" # uBlock Origin Lite
-      "pkehgijcmpdhfbdbbnkijodmdjhbjlgp" # Privacy Badger
-      "fihpndlbefclajajpmcancklkcjijeno" # Ayu Dark
-    ];
-  };
-
-  # Hyprland 0.55 prefers hyprland.lua when it exists. This configuration
-  # intentionally uses the established Hyprlang file, so remove the Lua file
-  # produced by the abandoned migration during activation.
-  home.activation.removeHyprlandLuaConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    rm -f -- "$HOME/.config/hypr/hyprland.lua"
-  '';
-
-  xdg.configFile = {
-    "hypr/hyprland.conf" = {
-      source = themed ./config/hypr/hyprland.conf;
-      force = true;
-    };
-    "hypr/hypridle.conf".source = ./config/hypr/hypridle.conf;
-    "hypr/hyprlock.conf".source = themed ./config/hypr/hyprlock.conf;
-
-    "kitty/kitty.conf".source = themed ./config/kitty/kitty.conf;
-
-    "waybar/config.jsonc".source = themed ./config/waybar/config.jsonc;
-    "waybar/style.css".source = themed ./config/waybar/style.css;
-
-    "wofi/config".source = ./config/wofi/config;
-    "wofi/style.css".source = themed ./config/wofi/style.css;
-  };
 }
