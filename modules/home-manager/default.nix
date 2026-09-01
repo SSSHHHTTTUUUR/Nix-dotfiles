@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   colors = config.lib.stylix.colors;
@@ -28,7 +33,8 @@ let
     DEFAULT_AUDIO_SOURCE = null;
   };
 
-  themed = src:
+  themed =
+    src:
     pkgs.replaceVars src (
       lib.filterAttrs (name: _: lib.hasInfix "@${name}@" (builtins.readFile src)) templateVars
     );
@@ -45,6 +51,7 @@ in
     ./fzf.nix
     ./yazi.nix
     ./browser.nix
+    ./harness.nix
   ];
 
   _module.args.themed = themed;
