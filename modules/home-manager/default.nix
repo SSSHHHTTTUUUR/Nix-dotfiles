@@ -48,6 +48,7 @@ in
     ./wlogout.nix
     ./fish.nix
     ./codex.nix
+    ./claude-code.nix
     ./fzf.nix
     ./yazi.nix
     ./browser.nix
