@@ -51,7 +51,7 @@ in
     ./codex.nix
     ./claude-code.nix
     ./fzf.nix
-    ./yazi.nix
+    ./broot.nix
     ./browser.nix
     ./harness.nix
   ];
@@ -74,7 +74,7 @@ in
     mako.enable = false;
     waybar.enable = false;
     wofi.enable = false;
-    yazi.enable = false;
+    broot.enable = false;
   };
 
 }
