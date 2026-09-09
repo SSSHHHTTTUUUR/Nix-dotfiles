@@ -5,8 +5,9 @@
     enable = true;
     polarity = "dark";
 
-    base16Scheme =
-      "${pkgs.base16-schemes}/share/themes/ayu-dark.yaml";
+    # Ayu Dark exactly as Zed renders it (ayu-colors v2), not the older
+    # base16-schemes "ayu-dark" which still carries the v1 foregrounds.
+    base16Scheme = ./themes/zed-ayu-dark.yaml;
 
     cursor = {
       package = pkgs.bibata-cursors;
@@ -50,4 +51,8 @@
       light = "Papirus";
     };
   };
+
+  # Stylix pulls this in for its own targets, but the starship prompt and the
+  # hand-written kitty config need the Nerd Font glyphs system-wide.
+  fonts.packages = [ pkgs.nerd-fonts.jetbrains-mono ];
 }

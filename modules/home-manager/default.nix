@@ -45,8 +45,10 @@ in
     ./hyprland.nix
     ./waybar.nix
     ./kitty.nix
+    ./gtk.nix
     ./wlogout.nix
     ./fish.nix
+    ./starship.nix
     ./codex.nix
     ./claude-code.nix
     ./fzf.nix
@@ -69,6 +71,7 @@ in
     hyprland.enable = false;
     hyprlock.enable = false;
     kitty.enable = false;
+    starship.enable = false;
     mako.enable = false;
     waybar.enable = false;
     wofi.enable = false;
