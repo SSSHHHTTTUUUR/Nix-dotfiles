@@ -48,7 +48,6 @@ in
     ./gtk.nix
     ./wlogout.nix
     ./fish.nix
-    ./starship.nix
     ./codex.nix
     ./claude-code.nix
     ./fzf.nix
