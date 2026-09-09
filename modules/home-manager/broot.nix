@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, zed, ... }:
 
 let
   c = config.lib.stylix.colors.withHashtag;
@@ -11,7 +11,13 @@ in
     settings = {
       # -s shows the size column, computing directory sizes recursively;
       # -h keeps hidden files visible, as the yazi setup this replaced did.
-      default_flags = "-sh";
+      #
+      # --sort-by-type-dirs-first pins broot to one level of the tree, so a
+      # directory is only entered on demand instead of being expanded to fill
+      # the screen, and directories come first — the yazi listing this
+      # replaced.  A search pattern still walks the whole subtree; only the
+      # idle view is flat.
+      default_flags = "-sh --sort-by-type-dirs-first";
 
       # Dark base16 theme for the syntax-highlighted file preview.
       syntax_theme = "OceanDark";
@@ -51,7 +57,7 @@ in
         git_status_conflicted = "${c.base08} none";
         git_status_other = "${c.base09} none";
 
-        selected_line = "none ${c.base01} / none ${c.base00}";
+        selected_line = "none ${zed.hover} / none ${c.base00}";
         char_match = "${c.base0A} none bold";
         file_error = "${c.base08} none";
 
@@ -60,8 +66,8 @@ in
 
         input = "${c.base05} ${c.base01} / ${c.base04} ${c.base00}";
 
-        status_error = "${c.base00} ${c.base08}";
-        status_job = "${c.base00} ${c.base0A}";
+        status_error = "${c.base08} ${zed.errorBg}";
+        status_job = "${c.base0A} ${zed.warningBg}";
         status_normal = "${c.base05} ${c.base01} / none none";
         status_italic = "${c.base0E} ${c.base01} italic / none none";
         status_bold = "${c.base0D} ${c.base01} bold / none none";
@@ -74,7 +80,7 @@ in
         purpose_ellipsis = "none none";
 
         scrollbar_track = "${c.base01} none";
-        scrollbar_thumb = "${c.base0D} none / ${c.base02} none";
+        scrollbar_thumb = "${c.base04} none / ${c.base02} none";
 
         help_paragraph = "none none";
         help_bold = "${c.base09} none bold";
@@ -96,7 +102,7 @@ in
         hex_non_ascii = "${c.base08} none";
 
         staging_area_title = "${c.base05} ${c.base01} / ${c.base04} ${c.base00}";
-        mode_command_mark = "${c.base00} ${c.base0E} bold";
+        mode_command_mark = "${c.base0E} ${zed.surface} bold";
 
         good_to_bad_0 = c.base0B;
         good_to_bad_1 = c.base0B;

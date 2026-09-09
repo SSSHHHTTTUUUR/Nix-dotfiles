@@ -1,4 +1,10 @@
-{ config, lib, themed, ... }:
+{
+  config,
+  lib,
+  themed,
+  zed,
+  ...
+}:
 
 let
   colors = config.lib.stylix.colors;
@@ -10,9 +16,9 @@ in
       anchor = "top-right";
       layer = "overlay";
       font = "JetBrains Mono 11";
-      background-color = "#${colors.base01}";
+      background-color = zed.surface;
       text-color = "#${colors.base05}";
-      border-color = "#${colors.base03}";
+      border-color = zed.border;
       border-size = 1;
       border-radius = 8;
       width = 360;
@@ -24,9 +30,12 @@ in
       icons = true;
       markup = true;
 
-      "urgency=low".border-color = "#${colors.base02}";
+      "urgency=low".border-color = zed.borderVariant;
+      # Zed reports a condition with a tinted wash and a matching border.
       "urgency=critical" = {
-        border-color = "#${colors.base08}";
+        background-color = zed.errorBg;
+        border-color = zed.errorBorder;
+        text-color = "#${colors.base08}";
         default-timeout = 0;
       };
     };

@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, zed, ... }:
 
 let
   c = config.lib.stylix.colors.withHashtag;
@@ -54,9 +54,9 @@ in
       button {
         color: ${c.base05};
 
-        background-color: alpha(${c.base01}, 0.96);
+        background-color: alpha(${zed.surface}, 0.96);
 
-        border: 1px solid alpha(${c.base03}, 0.75);
+        border: 1px solid ${zed.border};
         border-radius: 18px;
 
         margin: 10px;
@@ -74,34 +74,38 @@ in
           color 150ms ease;
       }
 
+      /* Neutral by default; the destructive actions get Zed's tinted
+         semantic backgrounds instead of a saturated fill. */
       button:hover,
       button:focus {
-        color: ${c.base00};
-        background-color: ${c.base0D};
-        border-color: ${c.base0D};
+        color: ${c.base05};
+        background-color: ${zed.hover};
+        border-color: ${zed.border};
       }
 
       button:active {
-        background-color: ${c.base0C};
-        border-color: ${c.base0C};
-      }
-
-      #shutdown:hover,
-      #shutdown:focus {
-        background-color: ${c.base08};
-        border-color: ${c.base08};
-      }
-
-      #reboot:hover,
-      #reboot:focus {
-        background-color: ${c.base09};
-        border-color: ${c.base09};
+        background-color: ${zed.selected};
       }
 
       #suspend:hover,
       #suspend:focus {
-        background-color: ${c.base0A};
-        border-color: ${c.base0A};
+        color: ${c.base0D};
+        background-color: ${zed.infoBg};
+        border-color: ${zed.infoBorder};
+      }
+
+      #reboot:hover,
+      #reboot:focus {
+        color: ${c.base0A};
+        background-color: ${zed.warningBg};
+        border-color: ${zed.warningBorder};
+      }
+
+      #shutdown:hover,
+      #shutdown:focus {
+        color: ${c.base08};
+        background-color: ${zed.errorBg};
+        border-color: ${zed.errorBorder};
       }
     '';
   };

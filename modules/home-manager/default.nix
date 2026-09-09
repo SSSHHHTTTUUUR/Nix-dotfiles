@@ -28,10 +28,30 @@ let
       ;
   };
 
-  templateVars = palette // {
-    DEFAULT_AUDIO_SINK = null;
-    DEFAULT_AUDIO_SOURCE = null;
-  };
+  # The Zed UI palette, shared with the system layer.
+  zed = import ../../modules/themes/zed-ui.nix;
+
+  # `borderVariant` -> `border_variant`, so templates read `#@zed_border_variant@`
+  # in the same shape as `#@base05@`.
+  toSnakeCase =
+    name:
+    lib.concatStrings (
+      map (part: if builtins.isList part then "_" + lib.toLower (builtins.head part) else part) (
+        builtins.split "([A-Z])" name
+      )
+    );
+
+  zedVars = lib.mapAttrs' (
+    name: value: lib.nameValuePair "zed_${toSnakeCase name}" (lib.removePrefix "#" value)
+  ) zed;
+
+  templateVars =
+    palette
+    // zedVars
+    // {
+      DEFAULT_AUDIO_SINK = null;
+      DEFAULT_AUDIO_SOURCE = null;
+    };
 
   themed =
     src:
@@ -56,7 +76,7 @@ in
     ./harness.nix
   ];
 
-  _module.args.themed = themed;
+  _module.args = { inherit themed zed; };
 
   home = {
     username = "tea";

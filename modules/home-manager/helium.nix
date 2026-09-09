@@ -10,7 +10,6 @@
     extensions = [
       "ddkjiahejlhfcafbddmgiahcphecmpfh" # uBlock Origin Lite
       "pkehgijcmpdhfbdbbnkijodmdjhbjlgp" # Privacy Badger
-      "fihpndlbefclajajpmcancklkcjijeno" # Ayu Dark
     ];
   };
 }
