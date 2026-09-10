@@ -49,8 +49,10 @@
       "format": { "today": "<span color='#@base0A@'><b><u>{}</u></b></span>" },
     },
   },
-  "cpu": { "interval": 5, "format": "󰻠 {usage}%" },
-  "memory": { "interval": 10, "format": "󰍛 {used}G" },
+  // Both are read by polling /proc, and each poll is a wakeup on an otherwise
+  // idle bar. A CPU percentage that lags by a few seconds costs nothing.
+  "cpu": { "interval": 15, "format": "󰻠 {usage}%" },
+  "memory": { "interval": 30, "format": "󰍛 {used}G" },
   "backlight": {
     "format": "{icon} {percent}%",
     "format-icons": ["󰃞", "󰃟", "󰃠"],

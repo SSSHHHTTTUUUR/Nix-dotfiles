@@ -34,6 +34,11 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("hypridle")
     hl.exec_cmd("awww-daemon")
     hl.exec_cmd("hyprpolkitagent")
+
+    -- Put the panel on the refresh rate that matches the current power source.
+    -- A udev rule handles every later charger change; this covers starting the
+    -- session on battery, when no uevent is coming.
+    hl.exec_cmd("display-power-mode")
 end)
 
 
@@ -74,6 +79,14 @@ hl.config({
 
         active_opacity   = 1.0,
         inactive_opacity = 1.0,
+
+        -- Blur defaults to on and is the one decoration that costs GPU time on
+        -- every frame that touches a translucent surface, idle or not.  Nothing
+        -- here is translucent (both opacities are 1.0), so it was buying
+        -- nothing.
+        blur = {
+            enabled = false,
+        },
 
         shadow = {
             enabled      = false,
@@ -130,7 +143,21 @@ hl.config({
     misc = {
         force_default_wallpaper = -1,
         disable_hyprland_logo   = true,
+
+        -- 2 = adaptive sync for fullscreen windows only.  Kept as-is: this
+        -- panel does not advertise adaptive sync at all (no `vrr_capable` on
+        -- card1-eDP-1), so the setting is inert for the laptop display and only
+        -- ever applies to an external monitor, which is on mains power anyway.
         vrr                     = 2,
+    },
+
+    -- VFR -- stop redrawing a screen whose contents have not changed -- is the
+    -- single most valuable idle-power setting Hyprland has, and it is on by
+    -- default.  It lives under `debug` since it was moved out of `misc`, whose
+    -- `vfr` key no longer exists; stated here so a future config edit does not
+    -- quietly resurrect the old key and assume it took effect.
+    debug = {
+        vfr = true,
     },
 })
 
