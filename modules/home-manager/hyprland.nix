@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   themed,
   zed,
   ...
@@ -41,15 +40,9 @@ in
     };
   };
 
-  # Hyprland 0.55 prefers hyprland.lua when it exists. Keep the established
-  # Hyprlang configuration authoritative after Home Manager activation.
-  home.activation.removeHyprlandLuaConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    rm -f -- "${config.home.homeDirectory}/.config/hypr/hyprland.lua"
-  '';
-
   xdg.configFile = {
-    "hypr/hyprland.conf" = {
-      source = themed ./config/hypr/hyprland.conf;
+    "hypr/hyprland.lua" = {
+      source = themed ./config/hypr/hyprland.lua;
       force = true;
     };
     "hypr/hypridle.conf".source = ./config/hypr/hypridle.conf;
