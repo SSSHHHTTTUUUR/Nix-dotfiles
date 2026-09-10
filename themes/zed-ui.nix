@@ -1,11 +1,10 @@
-# Zed's "Ayu Dark" UI roles that base16 has no slot for: base16 carries a
-# single selection colour, while Zed distinguishes chrome, hover, selected and
-# three kinds of border.  base16 (zed-ayu-dark.yaml) stays the portable colour
-# scheme and carries syntax and semantics; this is the precise UI palette.
+# Zed's "Ayu Dark" UI roles base16 has no slot for: base16 carries a single
+# selection colour, while Zed distinguishes chrome, hover, selected and three
+# kinds of border. base16 (zed-ayu-dark.yaml) stays the portable scheme and
+# carries syntax/semantics; this is the precise UI palette.
 #
-# Both layers read it: Home Manager passes it to its modules as the `zed`
-# argument (home/tea/default.nix), the system side imports it directly
-# (modules/chromium.nix).
+# Both layers read it: Home Manager passes it as the `zed` argument
+# (home/tea/default.nix), the system side imports it directly.
 {
   canvas = "#0d1016"; # editor / terminal background — same as base00
   surface = "#1f2127"; # panels, tab bar, popovers, notifications
@@ -21,8 +20,8 @@
 
   disabled = "#696a6a";
 
-  # Tinted semantic backgrounds: Zed states a condition with a wash plus a
-  # matching border, never with a saturated fill.
+  # Tinted semantic backgrounds: a condition is a wash plus a matching border,
+  # never a saturated fill.
   successBg = "#294113";
   successBorder = "#405c1c";
   warningBg = "#572815";

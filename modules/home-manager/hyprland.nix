@@ -30,7 +30,7 @@ in
       markup = true;
 
       "urgency=low".border-color = zed.borderVariant;
-      # Zed reports a condition with a tinted wash and a matching border.
+      # A condition is a tinted wash plus a matching border.
       "urgency=critical" = {
         background-color = zed.errorBg;
         border-color = zed.errorBorder;

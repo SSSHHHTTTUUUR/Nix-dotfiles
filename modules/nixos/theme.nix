@@ -6,7 +6,7 @@
     polarity = "dark";
 
     # Ayu Dark exactly as Zed renders it (ayu-colors v2), not the older
-    # base16-schemes "ayu-dark" which still carries the v1 foregrounds.
+    # base16-schemes "ayu-dark" with its v1 foregrounds.
     base16Scheme = ./themes/zed-ayu-dark.yaml;
 
     cursor = {
@@ -37,11 +37,10 @@
       };
     };
 
-    # Можно не писать: по умолчанию включается через autoEnable.
-    # Но для очевидности мне нравится оставить.
+    # Enabled by default via autoEnable; kept explicit for clarity.
     targets.gtk.enable = true;
-    # Chromium's interface theme is installed through Home Manager as a normal
-    # Ayu Dark extension. The Stylix target would create managed browser policy.
+    # Chromium's UI theme is a normal Ayu Dark extension installed by Home
+    # Manager; the Stylix target would create managed browser policy.
     targets.chromium.enable = false;
 
     icons = {

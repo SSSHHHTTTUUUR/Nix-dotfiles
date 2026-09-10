@@ -28,11 +28,11 @@ let
       ;
   };
 
-  # The Zed UI palette, shared with the system layer.
+  # Zed UI palette, shared with the system layer.
   zed = import ../../modules/themes/zed-ui.nix;
 
   # `borderVariant` -> `border_variant`, so templates read `#@zed_border_variant@`
-  # in the same shape as `#@base05@`.
+  # the same way as `#@base05@`.
   toSnakeCase =
     name:
     lib.concatStrings (
@@ -84,8 +84,8 @@ in
     stateVersion = "26.05";
   };
 
-  # These configs use Stylix's palette through the templates below.
-  # Disable the built-in targets so they do not generate conflicting files.
+  # These configs use Stylix's palette through the templates below, so disable
+  # the built-in targets to avoid conflicting generated files.
   stylix.targets = {
     hyprland.enable = false;
     hyprlock.enable = false;

@@ -3,8 +3,8 @@
 let
   c = config.lib.stylix.colors.withHashtag;
 
-  # `zed` carries the UI layers from home/tea/default.nix; the semantic colours
-  # are plain base16 entries, so they stay in one place.
+  # `zed` carries the UI layers from home/tea/default.nix; the semantic
+  # colours are plain base16 entries, kept here.
   ui = zed // {
     text = c.base05;
     muted = c.base04;
@@ -17,13 +17,12 @@ let
 
   css = ''
     /* ── Zed "Ayu Dark" ────────────────────────────────────────────────
-       Appended after Stylix's base16 block, so these win.  Loaded by
-       GTK 3, GTK 4/libadwaita and (via Stylix's flatpakSupport) by the
-       flattened adw-gtk3 copy that Flatpak apps read.
+       Appended after Stylix's base16 block, so these win. Loaded by
+       GTK 3, GTK 4/libadwaita and, via Stylix's flatpakSupport, by the
+       flattened adw-gtk3 copy Flatpak apps read.
 
-       Three layers, as in Zed: canvas (${ui.canvas}) for editable content,
-       surface (${ui.surface}) for panels and dialogs, chrome (${ui.chrome})
-       for the title bar.  The blue accent only marks focus and state. */
+       Three layers, as in Zed: canvas for content, surface for panels and
+       dialogs, chrome for the title bar. Blue marks focus and state only. */
 
     /* libadwaita named colors */
     @define-color window_bg_color ${ui.surface};

@@ -9,14 +9,12 @@ in
     enableFishIntegration = true;
 
     settings = {
-      # -s shows the size column, computing directory sizes recursively;
-      # -h keeps hidden files visible, as the yazi setup this replaced did.
+      # -s: recursive size column; -h: keep hidden visible (as the yazi setup
+      # this replaced did).
       #
-      # --sort-by-type-dirs-first pins broot to one level of the tree, so a
-      # directory is only entered on demand instead of being expanded to fill
-      # the screen, and directories come first — the yazi listing this
-      # replaced.  A search pattern still walks the whole subtree; only the
-      # idle view is flat.
+      # --sort-by-type-dirs-first pins broot to one tree level — directories
+      # only expand on demand, list style like yazi. A search still walks the
+      # whole subtree; only the idle view is flat.
       default_flags = "-sh --sort-by-type-dirs-first";
 
       # Dark base16 theme for the syntax-highlighted file preview.
@@ -119,9 +117,8 @@ in
   };
 
   # broot has no config key for starting with the preview panel open, only the
-  # :open_preview verb, so the panel is requested on every interactive launch.
-  # The `br` function (from the fish integration) calls broot through this
-  # function too. An explicit --cmd/-c would clash, so it wins instead.
+  # :open_preview verb. The `br` alias calls this function too; an explicit
+  # --cmd/-c wins.
   programs.fish.functions.broot = ''
     if contains -- --cmd $argv; or contains -- -c $argv
         command broot $argv

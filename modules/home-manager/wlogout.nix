@@ -74,8 +74,8 @@ in
           color 150ms ease;
       }
 
-      /* Neutral by default; the destructive actions get Zed's tinted
-         semantic backgrounds instead of a saturated fill. */
+      /* Neutral by default; destructive actions get Zed's tinted semantic
+         backgrounds instead of a saturated fill. */
       button:hover,
       button:focus {
         color: ${c.base05};

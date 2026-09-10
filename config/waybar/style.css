@@ -49,7 +49,7 @@ window#waybar {
     color: #@base05@;
 }
 
-/* Graphite marks the selection, the blue rule marks which one is active —
+/* Graphite marks the selection; the blue rule marks the active workspace —
    the same division Zed uses in its tab bar. */
 #workspaces button.active {
     min-width: 35px;
