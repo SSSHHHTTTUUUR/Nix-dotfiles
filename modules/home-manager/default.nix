@@ -74,6 +74,7 @@ in
     ./broot.nix
     ./browser.nix
     ./harness.nix
+    ./teamspeak.nix
   ];
 
   _module.args = { inherit themed zed; };
