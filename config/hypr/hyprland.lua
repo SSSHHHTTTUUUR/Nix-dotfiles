@@ -169,7 +169,12 @@ hl.config({
 hl.config({
     input = {
         kb_layout  = "us,ru",
-        kb_options = "grp:alt_shift_toggle",
+        -- Caps Lock emits KEY_SCROLLLOCK: it is remapped at the hwdb level, not
+        -- in xkb (see modules/hardware.nix), so grp:sclk_toggle is what puts the
+        -- layout switch back onto that physical key. The option only rewrites
+        -- the keysym of <SCLK>, never its keycode, so the raw 0x46 scancode the
+        -- hwdb rule exists for still reaches a VM.
+        kb_options = "grp:alt_shift_toggle,grp:sclk_toggle",
 
         follow_mouse = 1,
 
