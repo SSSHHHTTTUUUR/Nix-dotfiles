@@ -187,11 +187,59 @@ hl.config({
     },
 })
 
+-- Touchpad: the built-in swipe, which slides the workspaces with the fingers.
+-- use_r makes it page by number, creating the next one (3 -> 4 -> 5) instead
+-- of jumping between occupied workspaces. It cannot wrap from the first
+-- workspace to the last: UnifiedWorkspaceSwipeGesture refuses a left
+-- neighbour with a higher id. A Lua-function gesture could wrap, but it only
+-- fires when the fingers lift, with no slide.
+hl.config({
+    gestures = {
+        workspace_swipe_use_r = true,
+    },
+})
+
 hl.gesture({
     fingers   = 3,
     direction = "horizontal",
     action    = "workspace",
 })
+
+-- Waybar's wheel over the workspaces (`hyprctl dispatch 'workspace_step(1)'`,
+-- a global on purpose): the same numbering, and back from the first workspace
+-- of this monitor wraps to its last occupied one.
+local function workspace_target(step)
+    local current = hl.get_active_workspace()
+    if not current then
+        return step > 0 and "r+1" or "r-1"
+    end
+    if step > 0 then
+        return "r+1"
+    end
+
+    local monitor = current.monitor and current.monitor.name
+    local taken = {} -- ids living on other monitors; `r` skips them
+    local highest = current.id
+    for _, ws in ipairs(hl.get_workspaces()) do
+        local here = ws.monitor and ws.monitor.name == monitor
+        if ws.id > 0 and not here then
+            taken[ws.id] = true
+        elseif ws.id > highest and not ws.is_empty then
+            highest = ws.id
+        end
+    end
+
+    for id = current.id - 1, 1, -1 do
+        if not taken[id] then
+            return "r-1"
+        end
+    end
+    return highest
+end
+
+function workspace_step(step)
+    return hl.dsp.focus({ workspace = workspace_target(step) })
+end
 
 hl.device({
     name        = "epic-mouse-v1",
@@ -262,6 +310,13 @@ hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),       { locked = tr
 hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = true })
+
+-- Lid: logind locks (HandleLidSwitch=lock, modules/power.nix) instead of
+-- suspending, so long-running agents keep going; the panel itself is switched
+-- off here. Only eDP-1, so a closed lid with HDMI attached is clamshell mode.
+-- `locked`, because by the time the lid opens hyprlock is up.
+hl.bind("switch:on:Lid Switch",  hl.dsp.dpms({ action = "off", monitor = "eDP-1" }), { locked = true })
+hl.bind("switch:off:Lid Switch", hl.dsp.dpms({ action = "on",  monitor = "eDP-1" }), { locked = true })
 
 
 --------------------------------
