@@ -39,8 +39,9 @@
 
     # Enabled by default via autoEnable; kept explicit for clarity.
     targets.gtk.enable = true;
-    # Chromium's UI theme is a normal Ayu Dark extension installed by Home
-    # Manager; the Stylix target would create managed browser policy.
+    # The Stylix target sets the BrowserThemeColor policy, which locks
+    # chrome://settings/appearance (the GTK theme option included). The theme
+    # is picked by hand there instead.
     targets.chromium.enable = false;
 
     icons = {
@@ -50,8 +51,4 @@
       light = "Papirus";
     };
   };
-
-  # Stylix pulls this in for its own targets, but the starship prompt and the
-  # hand-written kitty config need the Nerd Font glyphs system-wide.
-  fonts.packages = [ pkgs.nerd-fonts.jetbrains-mono ];
 }

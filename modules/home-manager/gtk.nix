@@ -3,7 +3,7 @@
 let
   c = config.lib.stylix.colors.withHashtag;
 
-  # `zed` carries the UI layers from home/tea/default.nix; the semantic
+  # `zed` carries the UI layers (modules/themes/zed-ui.nix); the semantic
   # colours are plain base16 entries, kept here.
   ui = zed // {
     text = c.base05;

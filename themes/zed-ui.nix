@@ -3,8 +3,9 @@
 # kinds of border. base16 (zed-ayu-dark.yaml) stays the portable scheme and
 # carries syntax/semantics; this is the precise UI palette.
 #
-# Both layers read it: Home Manager passes it as the `zed` argument
-# (home/tea/default.nix), the system side imports it directly.
+# Home Manager passes it to its modules as the `zed` argument
+# (home/tea/default.nix); a system module that needs it imports this file
+# directly.
 {
   canvas = "#0d1016"; # editor / terminal background — same as base00
   surface = "#1f2127"; # panels, tab bar, popovers, notifications

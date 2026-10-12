@@ -28,7 +28,8 @@ let
       ;
   };
 
-  # Zed UI palette, shared with the system layer.
+  # Zed UI palette. It lives under modules/ so a system module can import it
+  # too.
   zed = import ../../modules/themes/zed-ui.nix;
 
   # `borderVariant` -> `border_variant`, so templates read `#@zed_border_variant@`
@@ -85,13 +86,12 @@ in
     stateVersion = "26.05";
   };
 
-  # These configs use Stylix's palette through the templates below, so disable
-  # the built-in targets to avoid conflicting generated files.
+  # These apps take Stylix's palette by hand, through `themed` templates or
+  # config.lib.stylix.colors in Nix, so their generated targets would collide.
   stylix.targets = {
     hyprland.enable = false;
     hyprlock.enable = false;
     kitty.enable = false;
-    starship.enable = false;
     mako.enable = false;
     waybar.enable = false;
     wofi.enable = false;
