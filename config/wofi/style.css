@@ -67,6 +67,12 @@ window {
   border-radius: 6px;
 }
 
+/* A row without an icon (clipboard text) would shrink to one tight line;
+   rows with icons are taller anyway. */
+#inner-box > flowboxchild > .entry {
+  min-height: 1.75rem;
+}
+
 #inner-box > flowboxchild:hover > .entry,
 #inner-box > flowboxchild:hover > expander,
 #expander-box > row:hover {

@@ -77,6 +77,7 @@ in
     ./harness.nix
     ./teamspeak.nix
     ./zed-editor.nix
+    ./clipboard.nix
   ];
 
   _module.args = { inherit themed zed; };
