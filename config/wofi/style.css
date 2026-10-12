@@ -57,3 +57,19 @@ window {
 #text:selected {
   color: #@base05@;
 }
+
+/* Multi-action entries (Zed's recent projects, an app's own actions): the
+   arrow is chrome, the actions sit indented under their app in muted text. */
+expander arrow,
+#expander-box #text {
+  color: #@base04@;
+}
+
+#expander-box {
+  background-color: transparent;
+  margin-left: 1.5rem;
+}
+
+#expander-box #entry:selected #text {
+  color: #@base05@;
+}

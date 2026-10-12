@@ -18,7 +18,7 @@ hl.config({
 
 local terminal    = "kitty"
 local fileManager = "thunar"
-local menu        = "wofi --show drun"
+local menu        = "zed-recent-projects; wofi --show drun"
 local browser     = "firefox"
 local social      = "Telegram"
 

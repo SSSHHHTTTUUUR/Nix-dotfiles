@@ -9,7 +9,6 @@ allow_images=true
 image_size=32
 insensitive=true
 allow_markup=true
-no_actions=true
 orientation=vertical
 halign=fill
 content_halign=fill
