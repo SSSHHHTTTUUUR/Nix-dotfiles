@@ -41,17 +41,48 @@ window {
 }
 
 #img {
-  margin: 10px;
+  margin: 6px 12px 6px 6px;
 }
 
-#entry {
-  border-radius: 8px;
-  padding: 0.25rem;
+/* wofi names both the list rows and the action rows "#entry", and an open
+   entry is one list row holding its actions. Rows only carry the divider,
+   which stays outside the rounded highlight; the highlight sits on what a row
+   shows. An open row (".expanded", set by the wofi patch in
+   modules/desktop.nix) takes none, its selected action is the cursor. */
+#inner-box > flowboxchild {
+  padding: 2px 0;
+  background-color: transparent;
+  border-bottom: 1px solid #@zed_border_variant@;
+  outline: none;
+}
+
+#inner-box > flowboxchild:last-child {
+  border-bottom: none;
+}
+
+#inner-box > flowboxchild > .entry,
+#inner-box > flowboxchild > expander,
+#expander-box > row {
+  padding: 0.4rem 0.5rem;
+  border-radius: 6px;
+}
+
+#inner-box > flowboxchild:hover > .entry,
+#inner-box > flowboxchild:hover > expander,
+#expander-box > row:hover {
+  background-color: #@zed_hover@;
 }
 
 /* Neutral selection; blue stays an indicator, as in Zed. */
-#entry:selected {
+#inner-box > flowboxchild:selected > .entry,
+#inner-box > flowboxchild:selected > expander,
+#expander-box > row:selected {
   background-color: #@zed_selected@;
+}
+
+#inner-box > flowboxchild.expanded:hover > expander,
+#inner-box > flowboxchild.expanded:selected > expander {
+  background-color: transparent;
 }
 
 #text:selected {
@@ -70,6 +101,14 @@ expander arrow,
   margin-left: 1.5rem;
 }
 
-#expander-box #entry:selected #text {
+/* The selected action is the cursor; GTK's focus ring would draw a second one. */
+#expander-box > row {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+#expander-box > row:selected #text {
   color: #@base05@;
 }
