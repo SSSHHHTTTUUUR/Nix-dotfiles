@@ -78,6 +78,7 @@ in
     ./teamspeak.nix
     ./zed-editor.nix
     ./clipboard.nix
+    ./photocraft.nix
   ];
 
   _module.args = { inherit themed zed; };
