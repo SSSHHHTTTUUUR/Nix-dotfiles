@@ -90,5 +90,11 @@ let
   };
 in
 {
+  programs.zed-editor = {
+    enable = true;
+    # Merge this policy into the existing settings, preserving UI preferences.
+    userSettings.session.trust_all_worktrees = false;
+  };
+
   home.packages = [ zed-recent-projects ];
 }

@@ -16,13 +16,13 @@ in
       }
       {
         label = "suspend";
-        action = "systemctl suspend";
+        action = "systemctl suspend --check-inhibitors=yes";
         text = "󰒲\nSuspend";
         keybind = "u";
       }
       {
         label = "logout";
-        action = "hyprctl dispatch exit";
+        action = "hyprctl dispatch 'hl.dsp.exit()'";
         text = "󰍃\nLogout";
         keybind = "e";
       }

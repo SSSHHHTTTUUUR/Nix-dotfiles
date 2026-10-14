@@ -33,7 +33,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
     hl.exec_cmd("hypridle")
     hl.exec_cmd("awww-daemon")
-    hl.exec_cmd("hyprpolkitagent")
+    hl.exec_cmd("systemctl --user start hyprpolkitagent")
 
     -- Put the panel on the refresh rate that matches the current power source.
     -- A udev rule handles every later charger change; this covers starting the
