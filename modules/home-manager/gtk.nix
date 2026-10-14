@@ -5,6 +5,9 @@ let
 
   # `zed` carries the UI layers (modules/themes/zed-ui.nix); the semantic
   # colours are plain base16 entries, kept here.
+  # Base selector for every button rule below.
+  b = "button:not(.osd):not(.circular):not(.pill)";
+
   ui = zed // {
     text = c.base05;
     muted = c.base04;
@@ -132,10 +135,10 @@ let
       background-color: ${ui.hover};
     }
 
-    /* Text selection: Zed's #5ac1fe3d wash over the canvas */
+    /* Text selection: Zed's #5ac1fe3d wash, pre-resolved over the canvas */
     selection,
     *:selected:focus text selection {
-      background-color: rgba(90, 193, 254, 0.24);
+      background-color: ${ui.selection};
       color: ${ui.text};
     }
 
@@ -172,52 +175,64 @@ let
       border: 1px solid ${ui.border};
     }
 
-    entry:focus,
+    entry:focus {
+      border-color: ${ui.accent};
+      box-shadow: inset 0 0 0 1px ${ui.focusBorder};
+    }
+
+    /* GTK 3 has no :focus-within and drops a whole rule over one unknown
+       selector, so this stays apart from entry:focus. */
     entry:focus-within,
     spinbutton:focus-within {
       border-color: ${ui.accent};
       box-shadow: inset 0 0 0 1px ${ui.focusBorder};
     }
 
-    button {
+    /* These rules sit at USER priority, above libadwaita and the apps' own
+       styles, so OSD, circular and pill buttons (media controls, round icon
+       buttons, call-to-action pills) keep their theme look. Every button rule
+       carries the same :not() chain to keep specificity in step. */
+    ${b} {
       background-color: ${ui.chrome};
       color: ${ui.text};
       border: 1px solid ${ui.border};
       background-image: none;
     }
 
-    button:hover {
+    ${b}:hover {
       background-color: ${ui.hover};
     }
 
-    button:active,
-    button:checked {
+    ${b}:active,
+    ${b}:checked,
+    ${b}.flat:checked {
       background-color: ${ui.selected};
       color: ${ui.text};
     }
 
-    button.flat,
-    button.titlebutton,
-    headerbar button {
+    ${b}.flat,
+    ${b}.titlebutton,
+    headerbar ${b} {
       background-color: transparent;
       border-color: transparent;
     }
 
-    button.flat:hover,
-    headerbar button:hover {
+    ${b}.flat:hover,
+    headerbar ${b}:hover {
       background-color: ${ui.hover};
     }
 
-    button.suggested-action {
+    ${b}.suggested-action {
       background-color: ${ui.accent};
       color: ${ui.canvas};
       border-color: ${ui.accent};
     }
 
-    button.destructive-action {
-      background-color: ${ui.error};
-      color: ${ui.canvas};
-      border-color: ${ui.error};
+    /* A condition is a tinted wash plus its matching border, not a block. */
+    ${b}.destructive-action {
+      background-color: ${ui.errorBg};
+      color: ${ui.error};
+      border-color: ${ui.errorBorder};
     }
 
     popover > contents,
@@ -273,7 +288,7 @@ let
       color: ${ui.muted};
     }
 
-    tabbar tabbox tab:checked {
+    tabbar tabbox tab:selected {
       background-color: ${ui.canvas};
       color: ${ui.text};
       box-shadow: inset 0 -2px ${ui.accent};
@@ -372,9 +387,9 @@ in
 
   gtk = {
     # Make GTK 3 load adw-gtk3's dark stylesheet instead of recolouring the
-    # light one; the colors above still override whatever it defines.
+    # light one; the colors above still override whatever it defines. Not set
+    # for GTK 4: libadwaita warns on it and follows color-scheme instead.
     gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
-    gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
 
     # GTK 2 ignores CSS entirely, so hand it the same palette as an rc block.
     gtk2.extraConfig = ''

@@ -52,6 +52,9 @@ let
     // {
       DEFAULT_AUDIO_SINK = null;
       DEFAULT_AUDIO_SOURCE = null;
+      # Hyprland's own cursor size must match the one Stylix gives GTK, or the
+      # pointer changes size on window borders.
+      cursor_size = toString config.stylix.cursor.size;
     };
 
   themed =

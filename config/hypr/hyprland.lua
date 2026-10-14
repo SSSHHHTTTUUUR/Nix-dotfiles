@@ -29,15 +29,33 @@ local social      = "Telegram"
 
 hl.on("hyprland.start", function()
     hl.exec_cmd("waybar")
-    hl.exec_cmd("wl-paste --type text --watch cliphist store")
-    hl.exec_cmd("wl-paste --type image --watch cliphist store")
-    hl.exec_cmd("hypridle")
     hl.exec_cmd("awww-daemon")
-    hl.exec_cmd("systemctl --user start hyprpolkitagent")
+
+    -- Supervised user units (home/tea/hyprland.nix, hyprpolkitagent's own).
+    -- Their ConditionEnvironment=WAYLAND_DISPLAY is checked against the user
+    -- manager's environment, which Hyprland fills asynchronously: import it
+    -- first, in the same shell, or a unit can be skipped without a word.
+    -- The clipboard history does not outlive a session.
+    hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE; "
+        .. "cliphist wipe; "
+        .. "systemctl --user start hyprpolkitagent hypridle cliphist-text cliphist-image")
 
     -- Put the panel on the refresh rate that matches the current power source.
     -- A udev rule handles every later charger change; this covers starting the
     -- session on battery, when no uevent is coming.
+    hl.exec_cmd("display-power-mode")
+end)
+
+-- graphical-session.target is never reached here, so PartOf= does not stop
+-- the units with the session; without this they would outlive it, pointing
+-- at a dead WAYLAND_DISPLAY.
+hl.on("hyprland.shutdown", function()
+    hl.exec_cmd("systemctl --user stop hypridle cliphist-text cliphist-image hyprpolkitagent")
+end)
+
+-- A reload re-applies the eDP-1 mode above, 120 Hz even on battery; put the
+-- power-source rate back.
+hl.on("config.reloaded", function()
     hl.exec_cmd("display-power-mode")
 end)
 
@@ -46,8 +64,8 @@ end)
 ---- ENVIRONMENT VARIABLES ----
 -------------------------------
 
-hl.env("XCURSOR_SIZE", "18")
-hl.env("HYPRCURSOR_SIZE", "18")
+hl.env("XCURSOR_SIZE", "@cursor_size@")
+hl.env("HYPRCURSOR_SIZE", "@cursor_size@")
 hl.env("QT_QPA_PLATFORMTHEME", "qt5ct")
 hl.env("QT_STYLE_OVERRIDE", "kvantum")
 
@@ -258,7 +276,6 @@ hl.bind(mainMod .. " + B",         hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. " + T",         hl.dsp.exec_cmd(social))
 hl.bind(mainMod .. " + L",         hl.dsp.exec_cmd("hyprlock"))
 hl.bind(mainMod .. " + C",         hl.dsp.window.close())
-hl.bind(mainMod .. " + M",         hl.dsp.exit())
 hl.bind(mainMod .. " + E",         hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R",         hl.dsp.exec_cmd(menu))

@@ -16,7 +16,10 @@ in
       }
       {
         label = "suspend";
-        action = "systemctl suspend --check-inhibitors=yes";
+        # Explicit user action may override agents' sleep inhibitors: systemd's
+        # default "auto" still enforces them in logind without a terminal.
+        # hypridle keeps --check-inhibitors=yes for automatic suspend.
+        action = "systemctl suspend --check-inhibitors=no";
         text = "󰒲\nSuspend";
         keybind = "u";
       }
