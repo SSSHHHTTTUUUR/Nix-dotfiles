@@ -40,8 +40,10 @@
     # Enabled by default via autoEnable; kept explicit for clarity.
     targets.gtk.enable = true;
     # The Stylix target sets the BrowserThemeColor policy, which locks
-    # chrome://settings/appearance (the GTK theme option included). The theme
-    # is picked by hand there instead.
+    # chrome://settings/appearance (the GTK theme option included). Helium
+    # reads the same /etc/chromium/policies, so the target stays off even
+    # without Chromium installed. home/tea/browser.nix loads a theme extension
+    # built from the palette instead.
     targets.chromium.enable = false;
 
     icons = {
