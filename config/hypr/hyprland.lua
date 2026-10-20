@@ -2,8 +2,8 @@
 ---- MONITORS ----
 ------------------
 
-hl.monitor({ output = "HDMI-A-1", mode = "3440x1440@100", position = "0x0",    scale = 1    })
-hl.monitor({ output = "eDP-1",    mode = "2560x1600@120", position = "696x1440", scale = 1.25 })
+-- Rendered from dotfiles.hyprland.monitors (modules/home-manager/hyprland.nix).
+@monitors@
 
 hl.config({
     xwayland = {
@@ -16,11 +16,11 @@ hl.config({
 ---- MY PROGRAMS ----
 ---------------------
 
-local terminal    = "kitty"
-local fileManager = "thunar"
-local menu        = "zed-recent-projects; wofi --show drun"
-local browser     = "firefox"
-local social      = "Telegram"
+local terminal    = @terminal@
+local fileManager = @file_manager@
+local menu        = @launcher@
+local browser     = @browser@
+local social      = @messenger@
 
 
 -------------------
@@ -31,7 +31,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("waybar")
     hl.exec_cmd("awww-daemon")
 
-    -- Supervised user units (home/tea/hyprland.nix, hyprpolkitagent's own).
+    -- Supervised user units (modules/home-manager/hyprland.nix, hyprpolkitagent's own).
     -- Their ConditionEnvironment=WAYLAND_DISPLAY is checked against the user
     -- manager's environment, which Hyprland fills asynchronously: import it
     -- first, in the same shell, or a unit can be skipped without a word.
@@ -42,7 +42,8 @@ hl.on("hyprland.start", function()
 
     -- Put the panel on the refresh rate that matches the current power source.
     -- A udev rule handles every later charger change; this covers starting the
-    -- session on battery, when no uevent is coming.
+    -- session on battery, when no uevent is coming. display-power-mode comes
+    -- from core's power module; without it this line does nothing.
     hl.exec_cmd("display-power-mode")
 end)
 
@@ -53,8 +54,8 @@ hl.on("hyprland.shutdown", function()
     hl.exec_cmd("systemctl --user stop hypridle cliphist-text cliphist-image hyprpolkitagent")
 end)
 
--- A reload re-applies the eDP-1 mode above, 120 Hz even on battery; put the
--- power-source rate back.
+-- A reload re-applies the internal panel's mode above, its top rate even on
+-- battery; put the power-source rate back.
 hl.on("config.reloaded", function()
     hl.exec_cmd("display-power-mode")
 end)
@@ -186,13 +187,9 @@ hl.config({
 
 hl.config({
     input = {
-        kb_layout  = "us,ru",
-        -- Caps Lock emits KEY_SCROLLLOCK: it is remapped at the hwdb level, not
-        -- in xkb (see modules/hardware.nix), so grp:sclk_toggle is what puts the
-        -- layout switch back onto that physical key. The option only rewrites
-        -- the keysym of <SCLK>, never its keycode, so the raw 0x46 scancode the
-        -- hwdb rule exists for still reaches a VM.
-        kb_options = "grp:alt_shift_toggle,grp:sclk_toggle",
+        -- dotfiles.hyprland.keyboard.layout and .options.
+        kb_layout  = @kb_layout@,
+        kb_options = @kb_options@,
 
         follow_mouse = 1,
 
@@ -259,11 +256,6 @@ function workspace_step(step)
     return hl.dsp.focus({ workspace = workspace_target(step) })
 end
 
-hl.device({
-    name        = "epic-mouse-v1",
-    sensitivity = -0.5,
-})
-
 
 ---------------------
 ---- KEYBINDINGS ----
@@ -329,12 +321,8 @@ hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = tr
 hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = true })
 
--- Lid: logind locks (HandleLidSwitch=lock, modules/power.nix) instead of
--- suspending, so long-running agents keep going; the panel itself is switched
--- off here. Only eDP-1, so a closed lid with HDMI attached is clamshell mode.
--- `locked`, because by the time the lid opens hyprlock is up.
-hl.bind("switch:on:Lid Switch",  hl.dsp.dpms({ action = "off", monitor = "eDP-1" }), { locked = true })
-hl.bind("switch:off:Lid Switch", hl.dsp.dpms({ action = "on",  monitor = "eDP-1" }), { locked = true })
+-- Lid switch binds, rendered from dotfiles.hyprland.internalDisplay.
+@lid_switch_binds@
 
 
 --------------------------------
@@ -348,3 +336,7 @@ hl.window_rule({ match = { class = "^(thunar)$", title = "^(File Operation Progr
 hl.window_rule({ match = { class = "^(thunar)$", title = "^(Confirm to replace files)$" },  float = true })
 hl.window_rule({ match = { class = "^(thunar|org.xfce.thunar)$" }, float = true })
 hl.window_rule({ match = { class = "^(firefox)$", title = "^(.*Opening.*)$" }, no_initial_focus = true })
+
+
+-- dotfiles.hyprland.extraConfig
+@extra_config@

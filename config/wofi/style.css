@@ -48,7 +48,7 @@ window {
    entry is one list row holding its actions. Rows only carry the divider,
    which stays outside the rounded highlight; the highlight sits on what a row
    shows. An open row (".expanded", set by the wofi patch in
-   modules/desktop.nix) takes none, its selected action is the cursor. */
+   core's packages/wofi.nix) takes none, its selected action is the cursor. */
 #inner-box > flowboxchild {
     padding: 2px 0;
     background-color: transparent;

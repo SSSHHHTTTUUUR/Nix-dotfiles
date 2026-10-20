@@ -1,4 +1,9 @@
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   desktopId = "dev.zed.Zed.desktop";
@@ -8,7 +13,7 @@ let
   # desktop entry into XDG_DATA_HOME, where it shadows the system one by ID,
   # with one desktop action per recent folder in front of "Open a new
   # workspace". Wofi renders actions as an expandable entry, opened by a click
-  # or, with the patched wofi in modules/desktop.nix, by Right.
+  # or, with the patched wofi from core (packages/wofi.nix), by Right.
   #
   # Run right before wofi by the launcher bind in hyprland.lua, so the list is
   # as fresh as the menu. The new entry is compared in memory and the directory
@@ -90,11 +95,17 @@ let
   };
 in
 {
-  programs.zed-editor = {
-    enable = true;
-    # Merge this policy into the existing settings, preserving UI preferences.
-    userSettings.session.trust_all_worktrees = false;
-  };
+  imports = [ ./lib.nix ];
 
-  home.packages = [ zed-recent-projects ];
+  options.dotfiles.zed-editor.enable = lib.mkEnableOption "Zed, with workspace trust prompts on and its recent projects as wofi desktop actions";
+
+  config = lib.mkIf config.dotfiles.zed-editor.enable {
+    programs.zed-editor = {
+      enable = true;
+      # Merge this policy into the existing settings, preserving UI preferences.
+      userSettings.session.trust_all_worktrees = false;
+    };
+
+    home.packages = [ zed-recent-projects ];
+  };
 }

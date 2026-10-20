@@ -1,4 +1,9 @@
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   # The clipboard history picker behind SUPER+V (hyprland.lua), fed by the
@@ -15,7 +20,7 @@ let
   #
   # Image rows are wofi's image escapes, `img:<path>:text:<label>`, with a
   # cached thumbnail; text rows are plain `text:<label>`, at their own height
-  # thanks to uniform_rows=false (modules/desktop.nix). wofi has no escaping
+  # thanks to uniform_rows=false (the patched wofi from core). wofi has no escaping
   # for these fields: a `text`/`img` segment between colons inside the
   # clipboard text would start a new one, so such segments get a zero-width
   # space.
@@ -60,7 +65,7 @@ let
   '';
 
   # wofi itself comes from PATH: the system one carries the patches in
-  # modules/desktop.nix, pkgs.wofi does not.
+  # core's packages/wofi.nix, pkgs.wofi does not.
   cliphist-wofi = pkgs.writeShellApplication {
     name = "cliphist-wofi";
 
@@ -113,7 +118,7 @@ let
 
       # Clipboard text is not markup, and the search matches the label, not
       # the thumbnail path in front of it. key_delete is the wofi patch in
-      # modules/desktop.nix: each removed row prints "-<line>".
+      # core's packages/wofi.nix: each removed row prints "-<line>".
       # Escape exits 1, but rows removed before it still count.
       out=$(
         wofi --dmenu --prompt "Clipboard · Shift+Del removes" --no-custom-entry \
@@ -147,5 +152,11 @@ let
   };
 in
 {
-  home.packages = [ cliphist-wofi ];
+  imports = [ ./lib.nix ];
+
+  options.dotfiles.clipboard.enable = lib.mkEnableOption "cliphist-wofi, the SUPER+V clipboard history picker (needs the patched wofi from core)";
+
+  config = lib.mkIf config.dotfiles.clipboard.enable {
+    home.packages = [ cliphist-wofi ];
+  };
 }

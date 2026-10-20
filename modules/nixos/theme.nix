@@ -1,56 +1,69 @@
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  stylix = {
-    enable = true;
-    polarity = "dark";
+  # The Stylix NixOS module must be imported next to this one.
+  options.dotfiles.theme.enable = lib.mkEnableOption ''
+    the system-wide Stylix setup: the Zed Ayu Dark base16 scheme, JetBrains Mono
+    Nerd Font, Bibata cursor and Papirus icons
+  '';
 
-    # Ayu Dark exactly as Zed renders it (ayu-colors v2), not the older
-    # base16-schemes "ayu-dark" with its v1 foregrounds.
-    base16Scheme = ./themes/zed-ayu-dark.yaml;
-
-    cursor = {
-      package = pkgs.bibata-cursors;
-      name = "Bibata-Modern-Ice";
-      size = 24;
-    };
-
-    fonts = {
-      monospace = {
-        package = pkgs.nerd-fonts.jetbrains-mono;
-        name = "JetBrainsMono Nerd Font";
-      };
-
-      sansSerif = {
-        package = pkgs.nerd-fonts.jetbrains-mono;
-        name = "JetBrainsMono Nerd Font";
-      };
-
-      serif = {
-        package = pkgs.nerd-fonts.jetbrains-mono;
-        name = "JetBrainsMono Nerd Font";
-      };
-
-      emoji = {
-        package = pkgs.noto-fonts-color-emoji;
-        name = "Noto Color Emoji";
-      };
-    };
-
-    # Enabled by default via autoEnable; kept explicit for clarity.
-    targets.gtk.enable = true;
-    # The Stylix target sets the BrowserThemeColor policy, which locks
-    # chrome://settings/appearance (the GTK theme option included). Helium
-    # reads the same /etc/chromium/policies, so the target stays off even
-    # without Chromium installed. home/tea/browser.nix loads a theme extension
-    # built from the palette instead.
-    targets.chromium.enable = false;
-
-    icons = {
+  config = lib.mkIf config.dotfiles.theme.enable {
+    stylix = {
       enable = true;
-      package = pkgs.papirus-icon-theme;
-      dark = "Papirus-Dark";
-      light = "Papirus";
+      polarity = "dark";
+
+      # Ayu Dark exactly as Zed renders it (ayu-colors v2), not the older
+      # base16-schemes "ayu-dark" with its v1 foregrounds.
+      base16Scheme = ../../themes/zed-ayu-dark.yaml;
+
+      cursor = {
+        package = pkgs.bibata-cursors;
+        name = "Bibata-Modern-Ice";
+        size = 24;
+      };
+
+      fonts = {
+        monospace = {
+          package = pkgs.nerd-fonts.jetbrains-mono;
+          name = "JetBrainsMono Nerd Font";
+        };
+
+        sansSerif = {
+          package = pkgs.nerd-fonts.jetbrains-mono;
+          name = "JetBrainsMono Nerd Font";
+        };
+
+        serif = {
+          package = pkgs.nerd-fonts.jetbrains-mono;
+          name = "JetBrainsMono Nerd Font";
+        };
+
+        emoji = {
+          package = pkgs.noto-fonts-color-emoji;
+          name = "Noto Color Emoji";
+        };
+      };
+
+      # Enabled by default via autoEnable; kept explicit for clarity.
+      targets.gtk.enable = true;
+      # The Stylix target sets the BrowserThemeColor policy, which locks
+      # chrome://settings/appearance (the GTK theme option included). Helium
+      # reads the same /etc/chromium/policies, so the target stays off even
+      # without Chromium installed. The helium Home Manager module loads a theme
+      # extension built from the palette instead.
+      targets.chromium.enable = false;
+
+      icons = {
+        enable = true;
+        package = pkgs.papirus-icon-theme;
+        dark = "Papirus-Dark";
+        light = "Papirus";
+      };
     };
   };
 }

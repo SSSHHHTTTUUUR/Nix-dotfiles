@@ -18,7 +18,7 @@ let
       4
     ];
 
-  # Stylix's chromium target stays off (modules/theme.nix): its BrowserThemeColor
+  # Stylix's chromium target stays off (modules/nixos/theme.nix): its BrowserThemeColor
   # policy locks the Appearance section. An unpacked theme extension carries the
   # palette instead; loaded from the command line it needs no signing, and it
   # works from the read-only store. Its id is derived from the store path, so a
@@ -52,23 +52,50 @@ let
     };
   };
 
-  helium = pkgs.callPackage ../../packages/helium.nix { };
+  cfg = config.dotfiles.helium;
+  helium = cfg.package;
 in
 {
-  home.sessionVariables.NIXOS_OZONE_WL = "1";
+  imports = [ ./lib.nix ];
 
-  # Home Manager's chromium module knows no Helium, so it is a plain package with
-  # its profile in ~/.config/net.imput.helium. It ships uBlock Origin itself and
-  # takes extensions from its own Web Store proxy. The desktop entry runs
-  # `helium` from PATH, so it gets the wrapper as well.
-  home.packages = [
-    (pkgs.symlinkJoin {
-      inherit (helium) name meta;
-      paths = [ helium ];
-      nativeBuildInputs = [ pkgs.makeWrapper ];
-      postBuild = ''
-        wrapProgram $out/bin/helium --add-flags "--load-extension=${theme}"
+  options.dotfiles.helium = {
+    enable = lib.mkEnableOption "the Helium browser wrapped with a theme extension generated from the palette";
+
+    package = lib.mkOption {
+      type = lib.types.nullOr lib.types.package;
+      default = pkgs.helium or null;
+      defaultText = lib.literalExpression "pkgs.helium";
+      description = ''
+        The Helium package to wrap. Helium is not in nixpkgs: apply the core
+        flake's overlay (which adds `pkgs.helium`) or set this to any package
+        providing `bin/helium`.
       '';
-    })
-  ];
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = cfg.package != null;
+        message = "dotfiles.helium.package is unset and pkgs.helium does not exist: apply the core overlay or set the option.";
+      }
+    ];
+
+    home.sessionVariables.NIXOS_OZONE_WL = "1";
+
+    # Home Manager's chromium module knows no Helium, so it is a plain package with
+    # its profile in ~/.config/net.imput.helium. It ships uBlock Origin itself and
+    # takes extensions from its own Web Store proxy. The desktop entry runs
+    # `helium` from PATH, so it gets the wrapper as well.
+    home.packages = [
+      (pkgs.symlinkJoin {
+        inherit (helium) name meta;
+        paths = [ helium ];
+        nativeBuildInputs = [ pkgs.makeWrapper ];
+        postBuild = ''
+          wrapProgram $out/bin/helium --add-flags "--load-extension=${theme}"
+        '';
+      })
+    ];
+  };
 }

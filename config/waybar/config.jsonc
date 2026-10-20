@@ -20,7 +20,7 @@
   ],
   "hyprland/workspaces": {
     "format": "{icon}",
-    // Click dispatch is patched for Hyprland Lua in modules/desktop.nix.
+    // Click dispatch is patched for Hyprland Lua in core (packages/waybar.nix).
     "sort-by-number": true,
     "all-outputs": false,
     // workspace_step() in hyprland.lua: numbered like the touchpad swipe, and

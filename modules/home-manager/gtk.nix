@@ -1,9 +1,14 @@
-{ config, zed, ... }:
+{
+  lib,
+  config,
+  zed,
+  ...
+}:
 
 let
   c = config.lib.stylix.colors.withHashtag;
 
-  # `zed` carries the UI layers (modules/themes/zed-ui.nix); the semantic
+  # `zed` carries the UI layers (themes/zed-ui.nix, `dotfiles.theme.ui`); the semantic
   # colours are plain base16 entries, kept here.
   # Base selector for every button rule below.
   b = "button:not(.osd):not(.circular):not(.pill)";
@@ -383,19 +388,25 @@ let
   '';
 in
 {
-  stylix.targets.gtk.extraCss = css;
+  imports = [ ./lib.nix ];
 
-  gtk = {
-    # Make GTK 3 load adw-gtk3's dark stylesheet instead of recolouring the
-    # light one; the colors above still override whatever it defines. Not set
-    # for GTK 4: libadwaita warns on it and follows color-scheme instead.
-    gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
+  options.dotfiles.gtk.enable = lib.mkEnableOption "the Zed Ayu Dark GTK 2/3/4 and libadwaita colours on top of Stylix's GTK target";
 
-    # GTK 2 ignores CSS entirely, so hand it the same palette as an rc block.
-    gtk2.extraConfig = ''
-      gtk-application-prefer-dark-theme = 1
-      gtk_color_scheme = "fg_color:${ui.text}\nbg_color:${ui.surface}\ntext_color:${ui.text}\nbase_color:${ui.canvas}\nselected_fg_color:${ui.text}\nselected_bg_color:${ui.selected}\ntooltip_fg_color:${ui.text}\ntooltip_bg_color:${ui.surface}"
-    '';
+  config = lib.mkIf config.dotfiles.gtk.enable {
+    stylix.targets.gtk.extraCss = css;
+
+    gtk = {
+      # Make GTK 3 load adw-gtk3's dark stylesheet instead of recolouring the
+      # light one; the colors above still override whatever it defines. Not set
+      # for GTK 4: libadwaita warns on it and follows color-scheme instead.
+      gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
+
+      # GTK 2 ignores CSS entirely, so hand it the same palette as an rc block.
+      gtk2.extraConfig = ''
+        gtk-application-prefer-dark-theme = 1
+        gtk_color_scheme = "fg_color:${ui.text}\nbg_color:${ui.surface}\ntext_color:${ui.text}\nbase_color:${ui.canvas}\nselected_fg_color:${ui.text}\nselected_bg_color:${ui.selected}\ntooltip_fg_color:${ui.text}\ntooltip_bg_color:${ui.surface}"
+      '';
+    };
+
   };
-
 }
