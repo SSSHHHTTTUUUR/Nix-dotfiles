@@ -165,7 +165,7 @@ hl.config({
 
         -- 2 = adaptive sync for fullscreen windows only.  Kept as-is: this
         -- panel does not advertise adaptive sync at all (no `vrr_capable` on
-        -- card1-eDP-1), so the setting is inert for the laptop display and only
+        -- its DRM connector), so the setting is inert for the laptop display and only
         -- ever applies to an external monitor, which is on mains power anyway.
         vrr                     = 2,
     },

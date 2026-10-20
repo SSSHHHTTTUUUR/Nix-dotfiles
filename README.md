@@ -217,8 +217,8 @@ configuration:
 {
   dotfiles.hyprland = {
     monitors = [
-      { output = "HDMI-A-1"; mode = "3440x1440@100"; position = "0x0"; }
-      { output = "eDP-1"; mode = "2560x1600@120"; position = "696x1440"; scale = 1.25; }
+      { output = "DP-1"; mode = "2560x1440@144"; position = "0x0"; }
+      { output = "eDP-1"; mode = "1920x1200@60"; position = "512x1440"; scale = 1.25; }
     ];
     internalDisplay = "eDP-1";
   };
