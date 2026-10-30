@@ -46,13 +46,14 @@
   },
   "hyprland/language": { "format-en": "ENG", "format-ru": "RU" },
   "clock": {
-    // Both label and tooltip show minutes, avoiding a wakeup every second.
-    "interval": 60,
+    // The tooltip shows seconds, so tick every second; the label keeps
+    // minutes.
+    "interval": 1,
     "format": "󰃭 {:%d.%m | %H:%M}",
     // Flyout layout: weekday, date, time, a rule as wide as the calendar
     // (7 columns x 3 chars - 1), then the month. The whole tooltip is
     // JetBrains Mono, so the rule lines up.
-    "tooltip-format": "<span color='#@base04@'>{0:%A}</span>\n<span size='large' weight='bold'>{0:%d %B}</span>\n<span size='xx-large' color='#@base06@'>{0:%H:%M}</span>\n<span color='#@zed_border@'>────────────────────</span>\n<tt>{calendar}</tt>",
+    "tooltip-format": "<span color='#@base04@'>{0:%A}</span>\n<span size='large' weight='bold'>{0:%d %B}</span>\n<span size='xx-large' color='#@base06@'>{0:%H:%M:%S}</span>\n<span color='#@zed_border@'>────────────────────</span>\n<tt>{calendar}</tt>",
     "calendar": {
       "mode": "month",
       // Monday first while keeping English names; the en_US locale alone
