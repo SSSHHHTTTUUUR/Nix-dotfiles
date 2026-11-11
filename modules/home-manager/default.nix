@@ -9,15 +9,10 @@ let
     "gtk"
     "hyprland"
     "kitty"
-    "wofi"
-  ];
-
-  # The bar, notification daemon and power menu Noctalia replaces: on by
-  # default only when `dotfiles.noctalia.enable` is off.
-  shellModules = [
     "mako"
     "waybar"
     "wlogout"
+    "wofi"
   ];
 in
 {
@@ -31,7 +26,6 @@ in
     ./kitty.nix
     ./lib.nix
     ./mako.nix
-    ./noctalia.nix
     ./waybar.nix
     ./wlogout.nix
     ./wofi.nix
@@ -39,18 +33,13 @@ in
   ];
 
   options.dotfiles.desktop.enable = lib.mkEnableOption ''
-    the Hyprland desktop: ${lib.concatStringsSep ", " (desktopModules ++ shellModules)}
-    (the last three only without dotfiles.noctalia.enable).
+    the Hyprland desktop: ${lib.concatStringsSep ", " desktopModules}.
     Each stays individually switchable through its own enable option
   '';
 
   config = lib.mkIf config.dotfiles.desktop.enable {
-    dotfiles =
-      lib.genAttrs desktopModules (_: {
-        enable = lib.mkDefault true;
-      })
-      // lib.genAttrs shellModules (_: {
-        enable = lib.mkDefault (!config.dotfiles.noctalia.enable);
-      });
+    dotfiles = lib.genAttrs desktopModules (_: {
+      enable = lib.mkDefault true;
+    });
   };
 }
