@@ -23,6 +23,7 @@ into each file.
 | `kitty` | Terminal config and the Ayu Dark terminal palette; a fish `ssh` function that uses `kitten ssh` inside kitty only |
 | `gtk` | GTK 2/3/4 and libadwaita colour overrides on top of Stylix's GTK target |
 | `wlogout` | Five-button session menu |
+| `noctalia` | The Noctalia v5 shell (bar, launcher, notifications, lock screen, wallpaper, OSD, session menu) as a supervised user unit, `config.toml` from `dotfiles.noctalia.settings` and a palette generated from Stylix; replaces Waybar, wofi as launcher, mako, wlogout, awww and hyprlock (kept as fallback locker). Needs Noctalia 5.4+ (`dotfiles.noctalia.package`) |
 | `broot` | broot with a base16 skin, opening with the preview panel |
 | `fzf` | fzf with fish integration |
 | `zed-editor` | Zed with workspace trust prompts, and its recent projects as desktop actions in the launcher |
@@ -107,8 +108,13 @@ Home Manager NixOS module:
 ```
 
 `dotfiles.desktop.enable` turns on `hyprland`, `waybar`, `wofi`,
-`clipboard`, `mako`, `kitty`, `gtk` and `wlogout`. The remaining modules
-(`broot`, `fzf`, `zed-editor`, `helium`) have their own enable options.
+`clipboard`, `mako`, `kitty`, `gtk` and `wlogout`. With
+`dotfiles.noctalia.enable` it leaves `waybar`, `mako` and `wlogout` off and
+`hyprland.lua`/`hypridle.conf` switch to Noctalia (launcher, lock, OSD keys,
+session menu). The remaining modules (`broot`, `fzf`, `zed-editor`, `helium`,
+`noctalia`) have their own enable options. Values changed in Noctalia's settings
+window go to `~/.local/state/noctalia/settings.toml` and override
+`dotfiles.noctalia.settings` until removed there.
 `homeModules` is an alias of `homeManagerModules`.
 
 ## Individual modules

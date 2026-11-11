@@ -39,6 +39,7 @@
         "hyprland"
         "kitty"
         "mako"
+        "noctalia"
         "waybar"
         "wlogout"
         "wofi"
@@ -121,6 +122,12 @@
           };
           hm = nixos.config.home-manager.users.alice;
 
+          # The same desktop with Noctalia as the shell instead of Waybar & co.
+          hmNoctalia =
+            (nixos.extendModules {
+              modules = [ { home-manager.users.alice.dotfiles.noctalia.enable = true; } ];
+            }).config.home-manager.users.alice;
+
           # 2. Standalone Home Manager without NixOS and without the theme
           #    module: one individual module, Stylix configured by hand.
           standalone = home-manager.lib.homeManagerConfiguration {
@@ -183,6 +190,32 @@
                 for f in $files; do test -s "$f"; done
                 touch $out
               '';
+
+          # Noctalia replaces the bar, notifications, power menu and locker: the
+          # Lua must select it, hypridle must not start hyprlock, and the
+          # replaced configs must be gone.
+          noctalia =
+            pkgs.runCommand "check-noctalia"
+              {
+                nativeBuildInputs = [ pkgs.lua5_4 ];
+                lua = hmNoctalia.xdg.configFile."hypr/hyprland.lua".source;
+                idle = hmNoctalia.xdg.configFile."hypr/hypridle.conf".source;
+                toml = hmNoctalia.xdg.configFile."noctalia/config.toml".source;
+              }
+              ''
+                luac -p $lua
+                grep -q 'local shell       = "noctalia"' $lua
+                grep -q 'bin/noctalia msg panel-toggle launcher' $lua
+                grep -q 'is-active noctalia || pidof hyprlock || hyprlock' $idle
+                grep -q 'custom_palette = "stylix"' $toml
+                touch $out
+              '';
+
+          assertions-noctalia =
+            assert !(hmNoctalia.xdg.configFile ? "waybar/config.jsonc");
+            assert !hmNoctalia.services.mako.enable;
+            assert !hmNoctalia.programs.wlogout.enable;
+            pkgs.emptyFile;
 
           format = lint "format" [ pkgs.nixfmt ] "nixfmt --check $(find . -name '*.nix')";
           statix = lint "statix" [ pkgs.statix ] "statix check .";

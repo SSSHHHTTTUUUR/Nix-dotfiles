@@ -22,23 +22,44 @@ local menu        = @launcher@
 local browser     = @browser@
 local social      = @messenger@
 
+-- "noctalia" or "waybar", from dotfiles.noctalia.enable. Noctalia owns the bar,
+-- launcher, notifications, lock screen, wallpaper, OSD and session menu;
+-- otherwise Waybar, wofi, mako, hyprlock, awww and wlogout do.
+local shell       = @shell@
+local noctalia    = shell == "noctalia"
+local ipc         = @noctalia@ .. " msg "
+
+-- hyprlock stays the fallback when the shell is not running.
+local lock        = noctalia and (ipc .. "session lock || hyprlock") or "hyprlock"
+local powerMenu   = noctalia and ipc .. "panel-toggle session" or "wlogout"
+
+-- Supervised user units (modules/home-manager/hyprland.nix, noctalia.nix,
+-- hyprpolkitagent's own).
+local sessionUnits = "hyprpolkitagent hypridle cliphist-text cliphist-image"
+    .. (noctalia and " noctalia" or "")
+
 
 -------------------
 ---- AUTOSTART ----
 -------------------
 
 hl.on("hyprland.start", function()
-    hl.exec_cmd("waybar")
-    hl.exec_cmd("awww-daemon")
+    if not noctalia then
+        hl.exec_cmd("waybar")
+        hl.exec_cmd("awww-daemon")
+    end
 
-    -- Supervised user units (modules/home-manager/hyprland.nix, hyprpolkitagent's own).
     -- Their ConditionEnvironment=WAYLAND_DISPLAY is checked against the user
     -- manager's environment, which Hyprland fills asynchronously: import it
     -- first, in the same shell, or a unit can be skipped without a word.
+    -- Noctalia finds its logind session (lid and lock-session locking)
+    -- through XDG_SESSION_ID, and apps it launches as systemd units get the
+    -- graphical variables (Wayland Electron, cursor) only from this manager.
     -- The clipboard history does not outlive a session.
-    hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE; "
+    hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE XDG_SESSION_ID "
+        .. "XDG_SESSION_TYPE NIXOS_OZONE_WL MOZ_ENABLE_WAYLAND XCURSOR_THEME XCURSOR_SIZE HYPRCURSOR_SIZE GTK2_RC_FILES; "
         .. "cliphist wipe; "
-        .. "systemctl --user start hyprpolkitagent hypridle cliphist-text cliphist-image")
+        .. "systemctl --user start " .. sessionUnits)
 
     -- Put the panel on the refresh rate that matches the current power source.
     -- A udev rule handles every later charger change; this covers starting the
@@ -51,7 +72,7 @@ end)
 -- the units with the session; without this they would outlive it, pointing
 -- at a dead WAYLAND_DISPLAY.
 hl.on("hyprland.shutdown", function()
-    hl.exec_cmd("systemctl --user stop hypridle cliphist-text cliphist-image hyprpolkitagent")
+    hl.exec_cmd("systemctl --user stop " .. sessionUnits)
 end)
 
 -- A reload re-applies the internal panel's mode above, its top rate even on
@@ -266,12 +287,12 @@ local mainMod = "SUPER"
 hl.bind(mainMod .. " + Q",         hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + B",         hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. " + T",         hl.dsp.exec_cmd(social))
-hl.bind(mainMod .. " + L",         hl.dsp.exec_cmd("hyprlock"))
+hl.bind(mainMod .. " + L",         hl.dsp.exec_cmd(lock))
 hl.bind(mainMod .. " + C",         hl.dsp.window.close())
 hl.bind(mainMod .. " + E",         hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R",         hl.dsp.exec_cmd(menu))
-hl.bind(mainMod .. " + Escape",    hl.dsp.exec_cmd("wlogout"))
+hl.bind(mainMod .. " + Escape",    hl.dsp.exec_cmd(powerMenu))
 hl.bind(mainMod .. " + P",         hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J",         hl.dsp.layout("togglesplit"))
 hl.bind(mainMod .. " + K",         hl.dsp.layout("swapsplit"))
@@ -308,12 +329,26 @@ hl.bind(mainMod .. " + mouse_up",   hl.dsp.focus({ workspace = "e-1" }))
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
-hl.bind("XF86AudioLowerVolume",  hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"))
-hl.bind("XF86AudioRaiseVolume",  hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"))
-hl.bind("XF86AudioMute",         hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"))
-hl.bind("XF86AudioMicMute",      hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl s 10%-"))
-hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd("brightnessctl s +10%"))
+-- With Noctalia the keys go through its IPC, which shows the OSD; the plain
+-- command still runs when the shell is down (`noctalia msg` exits 1).
+local function osd(command, fallback)
+    return noctalia and (ipc .. command .. " || " .. fallback) or fallback
+end
+
+hl.bind("XF86AudioLowerVolume",  hl.dsp.exec_cmd(osd("volume-down 5", "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-")))
+hl.bind("XF86AudioRaiseVolume",  hl.dsp.exec_cmd(osd("volume-up 5",   "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+")))
+hl.bind("XF86AudioMute",         hl.dsp.exec_cmd(osd("volume-mute",   "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle")))
+hl.bind("XF86AudioMicMute",      hl.dsp.exec_cmd(osd("mic-mute",      "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle")))
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(osd("brightness-down current 10%", "brightnessctl s 10%-")))
+hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd(osd("brightness-up current 10%",   "brightnessctl s +10%")))
+
+if noctalia then
+    hl.bind(mainMod .. " + S",     hl.dsp.exec_cmd(ipc .. "panel-toggle control-center"))
+    hl.bind(mainMod .. " + comma", hl.dsp.exec_cmd(ipc .. "settings-toggle"))
+    -- SUPER, not ALT: Shift reverses the switcher, and Alt+Shift is the
+    -- xkb layout toggle (grp:alt_shift_toggle).
+    hl.bind(mainMod .. " + Tab",   hl.dsp.exec_cmd(ipc .. "window-switcher hold"))
+end
 
 -- `locked` (Hyprlang's `bindl`): media keys keep working on the lock screen.
 hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),       { locked = true })
@@ -336,6 +371,26 @@ hl.window_rule({ match = { class = "^(thunar)$", title = "^(File Operation Progr
 hl.window_rule({ match = { class = "^(thunar)$", title = "^(Confirm to replace files)$" },  float = true })
 hl.window_rule({ match = { class = "^(thunar|org.xfce.thunar)$" }, float = true })
 hl.window_rule({ match = { class = "^(firefox)$", title = "^(.*Opening.*)$" }, no_initial_focus = true })
+
+if noctalia then
+    -- Noctalia animates its own surfaces; Hyprland's layer fade on top of
+    -- that doubles every open and close.
+    hl.layer_rule({
+        name    = "noctalia-no-anim",
+        match   = { namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd|window-switcher)$" },
+        no_anim = true,
+    })
+    hl.window_rule({ match = { class = "^(dev.noctalia.Noctalia)$" }, float = true, size = { 1080, 920 } })
+
+    -- If the shell dies while the session is locked, the restarted unit can
+    -- take the lock over (`loginctl lock-session`) instead of leaving
+    -- Hyprland's lock-failure screen with no way back but a TTY.
+    hl.config({
+        misc = {
+            allow_session_lock_restore = true,
+        },
+    })
+end
 
 
 -- dotfiles.hyprland.extraConfig

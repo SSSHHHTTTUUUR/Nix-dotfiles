@@ -9,6 +9,9 @@
 
 let
   cfg = config.dotfiles.hyprland;
+
+  # Read without importing noctalia.nix, so this module still works alone.
+  noctalia = config.dotfiles.noctalia.enable or false;
   inherit (lib) mkOption types;
 
   # Lua string literals; JSON's quoting is valid Lua for these values.
@@ -35,12 +38,43 @@ let
     file_manager = lua cfg.fileManager;
     launcher = lua cfg.launcher;
     browser = lua cfg.browser;
+    shell = lua (if noctalia then "noctalia" else "waybar");
+    # A store path: the binds keep working whatever PATH Hyprland was started
+    # with, and before a profile carrying the package is active.
+    noctalia = lua (if noctalia then lib.getExe config.dotfiles.noctalia.package else "noctalia");
     messenger = lua cfg.messenger;
     kb_layout = lua cfg.keyboard.layout;
     kb_options = lua cfg.keyboard.options;
     lid_switch_binds = lidSwitchBinds;
     extra_config = cfg.extraConfig;
   };
+
+  # hypridle keeps the idle policy either way. With Noctalia running, the shell
+  # answers logind's Lock (lid, `loginctl lock-session`, the listeners) and
+  # locks before sleep itself, so hypridle must not start hyprlock on top of
+  # it. Only while the noctalia unit is not active does hyprlock take over,
+  # so a dead shell never leaves the lid or idle lock open. Noctalia reports
+  # its lock through logind's LockedHint; hyprlock is found by pid.
+  hypridleVars =
+    let
+      shellUp = "systemctl --user -q is-active noctalia";
+    in
+    if noctalia then
+      {
+        general = ''
+          lock_cmd = ${shellUp} || pidof hyprlock || hyprlock
+              before_sleep_cmd = ${shellUp} || loginctl lock-session
+              after_sleep_cmd = wake-displays'';
+        is_locked = ''{ pidof hyprlock || [ "$(loginctl show-session "''${XDG_SESSION_ID:-auto}" -p LockedHint --value)" = yes ]; }'';
+      }
+    else
+      {
+        general = ''
+          lock_cmd = pidof hyprlock || hyprlock
+              before_sleep_cmd = loginctl lock-session
+              after_sleep_cmd = wake-displays'';
+        is_locked = "pidof hyprlock";
+      };
 
   monitorType = types.submodule {
     options = {
@@ -132,8 +166,13 @@ in
       type = types.str;
       default =
         lib.optionalString (config.dotfiles.zed-editor.enable or false) "zed-recent-projects; "
-        + "wofi --show drun";
-      defaultText = lib.literalExpression ''"zed-recent-projects; wofi --show drun" (the first command only with dotfiles.zed-editor.enable)'';
+        + (
+          if noctalia then
+            "${lib.getExe config.dotfiles.noctalia.package} msg panel-toggle launcher"
+          else
+            "wofi --show drun"
+        );
+      defaultText = lib.literalExpression ''"zed-recent-projects; wofi --show drun" (the first command only with dotfiles.zed-editor.enable; Noctalia's launcher instead of wofi with dotfiles.noctalia.enable)'';
       description = "Command run by SUPER+R.";
     };
 
@@ -213,7 +252,7 @@ in
         source = themedWith hyprlandVars ../../config/hypr/hyprland.lua;
         force = true;
       };
-      "hypr/hypridle.conf".source = ../../config/hypr/hypridle.conf;
+      "hypr/hypridle.conf".source = pkgs.replaceVars ../../config/hypr/hypridle.conf hypridleVars;
       "hypr/hyprlock.conf".source = themed ../../config/hypr/hyprlock.conf;
 
       "satty/config.toml".text = ''
