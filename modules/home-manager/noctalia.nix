@@ -64,33 +64,6 @@ let
       };
   };
 
-  # Default bar islands (dotfiles.noctalia.islands); each id is a separate
-  # mkDefault, so a consumer can replace one island and keep the rest.
-  defaultIslands = {
-    workspaces = [ "workspaces" ];
-    window = [ "active_window" ];
-    time = [ "clock" ];
-    media = [ "media" ];
-    controls = [
-      "keyboard_layout"
-      "volume"
-      "network"
-      "brightness"
-    ];
-    system = [
-      "cpu"
-      "ram"
-      "battery"
-      "power_profile"
-      "tray"
-    ];
-    session = [
-      "notifications"
-      "control-center"
-      "session"
-    ];
-  };
-
   defaults = {
     theme = {
       mode = "dark";
@@ -119,42 +92,38 @@ let
       launcher.show_app_actions = true;
     };
 
-    # Floating islands: the bar surface itself is fully transparent and every
-    # group of widgets is its own rounded capsule, so the wallpaper shows
-    # between them. Logical pixels; 10 px of air above the islands.
     bar = {
       order = [ "default" ];
       default = {
         position = "top";
-        thickness = 48;
-        margin_edge = 10;
-        margin_ends = 12;
-        padding = 0;
-        background_opacity = 0.0;
-        border_width = 0.0;
+        thickness = 32;
+        margin_ends = 0;
+        radius = 0;
+        radius_top_left = 0;
+        radius_top_right = 0;
+        radius_bottom_left = 0;
+        radius_bottom_right = 0;
+        concave_edge_corners = false;
         shadow = false;
-        compositor_blur = false;
-        # Gap between islands.
-        widget_spacing = 10;
-
-        capsule = true;
-        capsule_thickness = 0.92;
-        capsule_radius = 14.0;
-        capsule_padding = 14.0;
-        capsule_border = "outline_variant";
-        capsule_border_width = 1.0;
-        capsule_group = lib.mapAttrsToList (id: members: { inherit id members; }) cfg.islands;
-
         start = [
-          "group:workspaces"
-          "group:window"
+          "workspaces"
+          "active_window"
         ];
-        center = [ "group:time" ];
+        center = [ "clock" ];
         end = [
-          "group:media"
-          "group:controls"
-          "group:system"
-          "group:session"
+          "media"
+          "keyboard_layout"
+          "tray"
+          "cpu"
+          "ram"
+          "notifications"
+          "network"
+          "volume"
+          "brightness"
+          "battery"
+          "power_profile"
+          "control-center"
+          "session"
         ];
       };
     };
@@ -164,9 +133,6 @@ let
         type = "clock";
         format = "{:%d.%m  %H:%M}";
       };
-      # Keeps the right-hand islands clear of the centred clock on a
-      # 2048 px wide (scaled) laptop panel.
-      media.max_length = 160.0;
       keyboard_layout.hide_when_single_layout = true;
       # Each bar lists its own monitor's workspaces, as Waybar did.
       workspaces = {
@@ -226,18 +192,6 @@ in
       description = "File name (without .json) of the generated palette in ~/.config/noctalia/palettes.";
     };
 
-    islands = lib.mkOption {
-      type = lib.types.attrsOf (lib.types.listOf lib.types.str);
-      defaultText = lib.literalExpression "workspaces, window, time, media, controls, system and session (see noctalia.nix)";
-      example = lib.literalExpression ''{ time = [ "clock" "clock-utc" ]; }'';
-      description = ''
-        Bar islands: capsule groups by id, each a list of widget instances.
-        The default bar lanes reference them as `group:<id>` (start:
-        workspaces, window; center: time; end: media, controls, system,
-        session). Setting one id replaces only that island.
-      '';
-    };
-
     settings = lib.mkOption {
       inherit (toml) type;
       default = { };
@@ -257,10 +211,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    dotfiles.noctalia = {
-      settings = lib.mapAttrsRecursive (_: lib.mkDefault) defaults;
-      islands = lib.mapAttrs (_: lib.mkDefault) defaultIslands;
-    };
+    dotfiles.noctalia.settings = lib.mapAttrsRecursive (_: lib.mkDefault) defaults;
 
     warnings = lib.optional (lib.versionOlder cfg.package.version "5.4") ''
       dotfiles.noctalia: ${cfg.package.name} is older than 5.4; the generated
