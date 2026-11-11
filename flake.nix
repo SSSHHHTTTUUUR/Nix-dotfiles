@@ -208,6 +208,7 @@
                 grep -q 'bin/noctalia msg panel-toggle launcher' $lua
                 grep -q 'is-active noctalia || pidof hyprlock || hyprlock' $idle
                 grep -q 'custom_palette = "stylix"' $toml
+                grep -qF 'center = ["group:time"]' $toml
                 touch $out
               '';
 
