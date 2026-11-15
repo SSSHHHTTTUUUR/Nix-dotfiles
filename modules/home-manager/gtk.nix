@@ -385,6 +385,84 @@ let
       color: ${ui.accent};
       border: 1px solid ${ui.infoBorder};
     }
+
+    /* ── Thunar ────────────────────────────────────────────────────────
+       Laid out like Zed: menu and tool bars are the title bar (chrome), the
+       side pane is the project panel (surface), the file view is the editor
+       (canvas), the status bar is Zed's (chrome). Class names come from
+       Thunar 4.20's sources (thunar-window.c, thunar-location-buttons.c). */
+    window.thunar menubar,
+    window.thunar toolbar,
+    window.thunar statusbar {
+      background-color: ${ui.chrome};
+      color: ${ui.text};
+    }
+
+    window.thunar toolbar {
+      border-bottom: 1px solid ${ui.border};
+    }
+
+    window.thunar statusbar {
+      border-top: 1px solid ${ui.border};
+      color: ${ui.muted};
+    }
+
+    window.thunar .sidebar,
+    window.thunar .sidebar .view,
+    window.thunar .sidebar scrolledwindow {
+      background-color: ${ui.surface};
+      color: ${ui.text};
+    }
+
+    window.thunar .sidebar {
+      border-right: 1px solid ${ui.border};
+    }
+
+    window.thunar .sidebar .view:hover {
+      background-color: ${ui.hover};
+    }
+
+    window.thunar .sidebar .view:selected {
+      background-color: ${ui.selected};
+    }
+
+    window.thunar .standard-view,
+    window.thunar .standard-view .view {
+      background-color: ${ui.canvas};
+    }
+
+    /* Zed's rubber band is its text-selection wash with an accent edge. */
+    window.thunar .view rubberband,
+    window.thunar rubberband {
+      background-color: ${ui.selection};
+      border: 1px solid ${ui.accent};
+    }
+
+    window.thunar paned > separator {
+      background-color: ${ui.border};
+    }
+
+    /* Path bar: flat crumbs, the current folder raised like Zed's breadcrumb */
+    window.thunar .path-bar ${b}.location-button {
+      background-color: transparent;
+      border-color: transparent;
+      color: ${ui.muted};
+    }
+
+    window.thunar .path-bar ${b}.location-button:hover {
+      background-color: ${ui.hover};
+      color: ${ui.text};
+    }
+
+    window.thunar .path-bar ${b}.location-button:checked {
+      background-color: ${ui.selected};
+      color: ${ui.text};
+    }
+
+    /* The unfocused half of a split view steps back, as Zed's inactive pane. */
+    window.thunar .split-view-inactive-pane .view {
+      background-color: ${ui.surface};
+    }
   '';
 in
 {
