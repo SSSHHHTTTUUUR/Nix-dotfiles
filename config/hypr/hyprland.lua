@@ -332,9 +332,16 @@ hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = tr
 hl.window_rule({ match = { class = "^(pavucontrol)$" },           float = true })
 hl.window_rule({ match = { class = "^(nm-connection-editor)$" },  float = true })
 hl.window_rule({ match = { class = "^(blueman-manager)$" },       float = true })
-hl.window_rule({ match = { class = "^(thunar)$", title = "^(File Operation Progress)$" },   float = true })
-hl.window_rule({ match = { class = "^(thunar)$", title = "^(Confirm to replace files)$" },  float = true })
-hl.window_rule({ match = { class = "^(thunar|org.xfce.thunar)$" }, float = true })
+-- Thunar's class is `Thunar`; matching is case-sensitive.
+hl.window_rule({ match = { class = "^([Tt]hunar|org.xfce.thunar)$" }, float = true })
+
+-- Thunar never tiles: the rule above only sets the initial state, so any later
+-- switch to tiled (toggle bind, hyprctl, the app itself) is floated straight back.
+hl.on("window.update_rules", function(w)
+    if w and not w.floating and (w.class == "Thunar" or w.class == "thunar" or w.class == "org.xfce.thunar") then
+        hl.dispatch(hl.dsp.window.float({ action = "enable", window = w }))
+    end
+end)
 hl.window_rule({ match = { class = "^(firefox)$", title = "^(.*Opening.*)$" }, no_initial_focus = true })
 
 
