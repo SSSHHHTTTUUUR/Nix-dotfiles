@@ -18,7 +18,9 @@ in
 {
   imports = [
     ./broot.nix
+    ./claude-code.nix
     ./clipboard.nix
+    ./direnv.nix
     ./fzf.nix
     ./gtk.nix
     ./helium.nix

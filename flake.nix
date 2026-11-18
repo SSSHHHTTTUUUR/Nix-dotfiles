@@ -32,7 +32,9 @@
 
       homeModuleNames = [
         "broot"
+        "claude-code"
         "clipboard"
+        "direnv"
         "fzf"
         "gtk"
         "helium"
@@ -69,6 +71,8 @@
             dotfiles = {
               desktop.enable = true;
               broot.enable = true;
+              claude-code.enable = true;
+              direnv.enable = true;
               fzf.enable = true;
               zed-editor.enable = true;
               helium = {

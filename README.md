@@ -25,6 +25,8 @@ into each file.
 | `wlogout` | Five-button session menu |
 | `broot` | broot with a base16 skin, opening with the preview panel |
 | `fzf` | fzf with fish integration |
+| `direnv` | direnv with nix-direnv, so a project flake loads into the shell |
+| `claude-code` | Merges the official rust-analyzer LSP plugin into the mutable `~/.claude/settings.json`; host-specific proxy and hooks stay in the consumer's `settings` |
 | `zed-editor` | Zed with workspace trust prompts, and its recent projects as desktop actions in the launcher |
 | `helium` | The Helium browser, wrapped with a theme extension generated from the palette |
 
